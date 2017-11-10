@@ -1,0 +1,22 @@
+---
+title: "2017-11-10 Project Proposal"
+author: "Ethan M. Lotz"
+date: "November 10, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+## Comparison of MicroRNA Profile in Extracellular Matrix Vesicles Produced by Chondrocyte Lineage Cells
+
+  Endochondral bone formation is a coordinated process that involves calcification of growth plate cartilage. Initiation of this process begins with the formation of small membrane-bound microvesicles (≤100 nm in diameter), termed matrix vesicles (MV), in the extracellular matrix of the cartilage. MVs are enriched in alkaline phosphatase specific activity, possess a hydroxyapatite nucleation core consisting of amorphous calcium phosphate, phosphatidylserine and calcium binding proteins including annexin family members, and they contain enzymes that diminish inhibitors of calcium phosphate formation. A number of cell types produce MVs including growth plate chondrocytes. Previously we have established an in vitro model showing growth zone chondrocytes derived from costochondral cartilage produced MVs with highly enriched alkaline phosphatase specific activity compared to resting zone chondrocytes. Furthermore, MVs produced by resting zone chondrocytes contain neutral metalloproteinases, whereas MVs produced by growth zone (prehypertrophic and upper hypertrophic zones) chondrocytes contain acidic matrix metalloproteinases (MMPs). These studies indicate that the composition is controlled genetically, which suggests that MVs are heterogeneous and multi-functional. 
+  
+  MVs have also been suggested to participate in intercellular communications. Recently, extracellular RNA, and in particular microRNA (miRNA), has been reported to be a conserved cell–cell communication mechanism. miRNAs are short (20–22-nucleotide), endogenous, single-stranded, non-coding RNA molecules that regulate gene expression at the post-transcriptional level. miRNAs are packed into MVs, transferred to recipient cells both proximal and distal to the original cell, and regulate gene expression. This horizontal gene transmission is involved in a variety of cellular behaviors in the body including angiogenesis, stem cell proliferation and differentiation and tumorigenesis through an autocrine or paracrine manner. We hypothesize that MVs play a role as mediators of intercellular crosstalk during bone formation by the transfer of RNA material.
+  
+  Here, using this well-characterized model, we propose to characterize the miRNA profiles of MVs produced between growth zone and resting zone chondrocytes isolated from Sprague Dawley rats. The publicly available dataset is available on the Gene Expression Omnibus (GSE106348). The platform of this dataset is GPL18694 Illumina HiSeq 2500 (Rattus norvegicus). Results from this data set are published (Lin et al, Bone, Selective enrichment of microRNAs in extracellular matrix vesicles produced by growth plate chondrocytes, 2016, 88: 47 – 55).
