@@ -1,0 +1,428 @@
+---
+title: "Comparison of MicroRNA Profile in Extracellular Matrix Vesicles Produced by Chondrocyte Lineage Cells"
+author: "Ethan M. Lotz"
+date: "December 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Biobase)
+library(GEOquery)
+library(knitr)
+library(pander)
+library(dplyr)
+library(Biobase)
+library(reshape2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(NormqPCR)
+library(ggrepel)
+library(scatterplot3d)
+library(limma)
+library(lsr)
+library(profvis)
+library(cluster)
+library(gplots)
+library(calibrate)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+## **1. Introduction**
+
+  Endochondral bone formation is a coordinated process that involves calcification of growth plate cartilage. Initiation of this process begins with the formation of small membrane-bound microvesicles (≤100 nm in diameter), termed matrix vesicles (MV), in the extracellular matrix of the cartilage [1]. MVs are enriched in alkaline phosphatase specific activity, possess a hydroxyapatite nucleation core consisting of amorphous calcium phosphate, phosphatidylserine and calcium binding proteins including annexin family members, and they contain enzymes that diminish inhibitors of calcium phosphate formation [2]. A number of cell types produce MVs including growth plate chondrocytes. Previously we have established an in vitro model showing growth zone chondrocytes derived from costochondral cartilage produced MVs with highly enriched alkaline phosphatase specific activity compared to resting zone chondrocytes [3]. Furthermore, MVs produced by resting zone chondrocytes contain neutral metalloproteinases, whereas MVs produced by growth zone (prehypertrophic and upper hypertrophic zones) chondrocytes contain acidic matrix metalloproteinases (MMPs)[4-6]. These studies indicate that the composition is controlled genetically, which suggests that MVs are heterogeneous and multi-functional.
+  
+  MVs have also been suggested to participate in intercellular communications. Recently, extracellular RNA, and in particular microRNA (miRNA), has been reported to be a conserved cell–cell communication mechanism [7]. miRNAs are short (20–22-nucleotide), endogenous, single-stranded, non-coding RNA molecules that regulate gene expression at the post-transcriptional level. miRNAs are packed into MVs, transferred to recipient cells both proximal and distal to the original cell, and regulate gene expression [8]. This horizontal gene transmission is involved in a variety of cellular behaviors in the body including angiogenesis, stem cell proliferation and differentiation and tumorigenesis through an autocrine or paracrine manner. We hypothesize that MVs play a role as mediators of intercellular crosstalk during bone formation by the transfer of RNA material.
+  
+## **2. Materials and Methods**
+
+*2.1. Chondrocyte cultures and MV isolation*
+
+  Costochondral cartilage cells were isolated by enzymatic digestion from 125 g male Sprague Dawley rats (~5-weeks-old) and cultured using exosome-free fetal bovine serum (FBS, Life Technologies). Approximately 1 million growth zone cells were isolated from the costochondral cartilage of 8 rats. These cells were plated and expanded. MVs were isolated from cultures in their fourth passage. Cells from at least 3 different dissections (8 rats per dissection) were used in the experiments. Exosome-free FBS was prepared by centrifuging FBS at 184,000 ×g for 4 h at 4 °C to remove serum exosomes. MVs were isolated from chondrocyte cultures by differentiation centrifugation of the trypsin digested cell layer. The same centrifugation protocol was used to pellet the microvesicles in cell culture media. MV isolation was validated by comparing its alkaline phosphatase specific activity to that of the plasma membranes isolated from the cells.
+
+*2.2. RNA extraction and detection*
+
+  RNA was isolated from MVs or cells using TRIzol (Life Technologies). RNA was eluted with RNase-free water and RNA quantity was determined using a NanoDrop spectrophotometer (Thermo Scientific). For agarose gels, 100 ng RNA was run and visualized on a 2.2% agarose gel FlashGel™ System (LONZA). Bioanalyzer analysis was performed using 300 ng RNA with an RNA 600 Nano Kit (Agilent) and an Agilent 2100 Bioanalyzer (Agilent).
+
+*2.3. miRNA PCR profiling in MVs*
+
+  MV and cell RNA were reverse transcribed to cDNA using the miRCURY LNA™ Universal RT microRNA PCR, Polyadenylation and cDNA synthesis kit (EXIQON) (n=3 for each sample type). microRNAs were then profiled in the miRCURY LNA Universal RT microRNA PCR array, which consisted of 223 rat miRNAs. All data were normalized to the average of assays detected in all samples. miRNAs with cycle number (Cq) < 37 for all three independent samples of MVs or cells were included for further analysis. Student's t-test was performed across all groups (p < 0.05). Normalization was performed based on the average of the assays detected in all samples, as this has shown to be the best normalization for qPCR studies involving numerous assays.
+
+*2.4 Data Analysis*
+
+*2.4.1 Quality Control*
+
+  An additional step in the real-time PCR analysis was performed to evaluate the specificity of the amplification products by generating a melting curve for each reaction. The appearance of a single peak with the expected Tm is an indication that a single specific product was amplified during the qPCR process. PCR reactions that gave rise to multiple melting curve peaks or single peaks with melting temperature that was inconsistent with the specifications for the corresponding assay were flagged and removed from the dataset.
+
+  A “no template” sample in the RT step was included as a negative control. This type of negative control is used as this is the most stringent type of control applicable. It will detect RNA contamination in the RT step. An assay detected 5 Cqs lower than the negative control will be included in the data analysis. For assays that do not yield any signal on the negative control, the upper limit of detection is set to Cq=37.
+
+  It is important for any qPCR experiment to ensure that the quality of the input RNA is sufficiently high for effective amplification. The cDNA synthesis control (UniSp6) was added in the reverse transcription reaction giving the opportunity to evaluate the RT reaction. In addition to this a DNA spike-in (UniSp3) is present on all panels. The DNA spike-in consists of a premixed combination of DNA template and primers. Deviations in this reaction will indicate inhibitions at the qPCR level.
+
+*2.4.2 Normalization*
+
+  Normalization is performed based on the average of the assays detected in all samples as this is shown to be the best normalization for qPCR studies involving numerous assays. For the present study, this included 146 assays. The stability of the average of 146 microRNAs is higher than any single microRNA in the data set as measured by the NormFinder software. The formula used to calculate the normalized Cq values is: Normalized Cq = average Cq (n=12) – assay Cq (sample). A higher value thus indicates that the microRNA is more abundant in the particular sample.
+  
+  
+*2.4.3 Unsupervised Clustering*
+
+  Heat map and unsupervised hierarchical clustering was performed on all samples, and on the top 50 microRNAs with highest standard deviation. The normalized (dCq) values have been used for the analysis.
+
+*2.4.3 Pairwise Analysis*
+
+  For microRNAs detected in at least three samples per group, a t-test is performed. Both raw p-values and p-values adjusted for multiple testing by the Benjamini-Hochberg correction are reported. The table is sorted on the raw p-values, with the most significant hits on top.
+  
+
+## **3. Results**
+
+```{r, echo=FALSE}
+#Read in raw EXIQON microarray data file
+dir <- getwd()
+setwd(dir)
+
+expression <- read.csv("raw_data_ref_2825.csv", na.strings=c("",".","ND"), stringsAsFactors=FALSE)
+rownames(expression) <- expression$dilution_id
+expression <- expression[-1]
+```
+
+**3.1 Quality Control and Normalization**
+
+  The panel profiling was successfully completed. The raw data all show good data quality. Out of 372 assays, 146 of them contained signal across all samples. The level of these assays shown in the graphs below indicates that reverse transcription and qPCR were successful. The variation observed for UniSp6 is somewhat larger than what is usually seen. Samples 8 and 9 yield stronger signals than the other samples. This is not expected, but as these samples do not deviate for call rate or average Cq values, we do not expect this to affect the data set.
+
+```{r, echo=FALSE, warning=FALSE}
+#Quality Control
+t_expression <- data.frame(t(expression))
+
+
+
+ggplot()+
+  geom_line(data=t_expression, aes(x=dilution_name, y=as.numeric(as.character(UniSp3.IPC)), group=1), size=2, colour="Blue")+
+  geom_line(data=t_expression, aes(x=dilution_name, y=as.numeric(as.character(UniSp6.CP)), group=1), size=2, colour="Red")+
+  scale_x_discrete(name="Sample",limits=c("12","9","1","5","11","2","4","3","8","10","7","6"))+
+  scale_y_continuous(name="Cq-values", limits=c(19,24))+
+  labs(title="Sample Quality Control Using Spike-Ins (Technical Controls)")
+```
+
+Following normalization of the data set, we see that the mean of each group is centered on 0.
+
+```{r, echo=FALSE}
+#Normalization And Batch Effect Removal (Blank Subtraction)
+t_expression_min <- t_expression
+t_expression_min <- t_expression_min[-c(1:4)]
+expression_min_all <- data.frame(t(t_expression_min))
+
+
+#Remove NAs from all rows but blank
+completeFun <- function(data, desiredCols) {
+  completeVec <- complete.cases(data[, desiredCols])
+  return(data[completeVec, ])
+}
+
+expression_min <- completeFun(expression_min_all, names(expression_min_all[1:12]))
+
+#Remove reactions within 5cp of blank
+expression_min <- expression_min[-which(expression_min$X28516==33.12623946),]
+
+#Removing Controls from dataset
+expression_min <- expression_min[-c(1:33),]
+expression_min <- expression_min[-c(153:156),]
+
+#Remove Blank Column
+expression_min <- expression_min[1:12]
+
+expression_min <- expression_min[apply(expression_min, MARGIN = 1, function(x) all(x < 37)),]
+
+#Column Means of Filtered Data
+globalmeanX28504 <- mean(as.numeric(as.character(expression_min$X28504)))
+globalmeanX28505 <- mean(as.numeric(as.character(expression_min$X28505)))
+globalmeanX28506 <- mean(as.numeric(as.character(expression_min$X28506)))
+globalmeanX28507 <- mean(as.numeric(as.character(expression_min$X28507)))
+globalmeanX28508 <- mean(as.numeric(as.character(expression_min$X28508)))
+globalmeanX28509 <- mean(as.numeric(as.character(expression_min$X28509)))
+globalmeanX28510 <- mean(as.numeric(as.character(expression_min$X28510)))
+globalmeanX28511 <- mean(as.numeric(as.character(expression_min$X28511)))
+globalmeanX28512 <- mean(as.numeric(as.character(expression_min$X28512)))
+globalmeanX28513 <- mean(as.numeric(as.character(expression_min$X28513)))
+globalmeanX28514 <- mean(as.numeric(as.character(expression_min$X28514)))
+globalmeanX28515 <- mean(as.numeric(as.character(expression_min$X28515)))
+
+#Actual Normalization Calculation
+expression_min_all <- expression_min_all[-c(1:75),]
+expression_min_all <- expression_min_all[-c(224:227),]
+
+expr_norm <- expression_min_all[1:12]
+expression_min_all <- expression_min_all[1:12]
+
+expression_min_all$X28504 <- as.numeric(as.character(expression_min_all$X28504))
+expression_min_all$X28505 <- as.numeric(as.character(expression_min_all$X28505))
+expression_min_all$X28506 <- as.numeric(as.character(expression_min_all$X28506))
+expression_min_all$X28507 <- as.numeric(as.character(expression_min_all$X28507))
+expression_min_all$X28508 <- as.numeric(as.character(expression_min_all$X28508))
+expression_min_all$X28509 <- as.numeric(as.character(expression_min_all$X28509))
+expression_min_all$X28510 <- as.numeric(as.character(expression_min_all$X28510))
+expression_min_all$X28511 <- as.numeric(as.character(expression_min_all$X28511))
+expression_min_all$X28512 <- as.numeric(as.character(expression_min_all$X28512))
+expression_min_all$X28513 <- as.numeric(as.character(expression_min_all$X28513))
+expression_min_all$X28514 <- as.numeric(as.character(expression_min_all$X28514))
+expression_min_all$X28515 <- as.numeric(as.character(expression_min_all$X28515))
+
+expr_norm$X28504 <- globalmeanX28504-as.numeric(as.character(expr_norm$X28504))
+expr_norm$X28505 <- globalmeanX28505-as.numeric(as.character(expr_norm$X28505))
+expr_norm$X28506 <- globalmeanX28506-as.numeric(as.character(expr_norm$X28506))
+expr_norm$X28507 <- globalmeanX28507-as.numeric(as.character(expr_norm$X28507))
+expr_norm$X28508 <- globalmeanX28508-as.numeric(as.character(expr_norm$X28508))
+expr_norm$X28509 <- globalmeanX28509-as.numeric(as.character(expr_norm$X28509))
+expr_norm$X28510 <- globalmeanX28510-as.numeric(as.character(expr_norm$X28510))
+expr_norm$X28511 <- globalmeanX28511-as.numeric(as.character(expr_norm$X28511))
+expr_norm$X28512 <- globalmeanX28512-as.numeric(as.character(expr_norm$X28512))
+expr_norm$X28513 <- globalmeanX28513-as.numeric(as.character(expr_norm$X28513))
+expr_norm$X28514 <- globalmeanX28514-as.numeric(as.character(expr_norm$X28514))
+expr_norm$X28515 <- globalmeanX28515-as.numeric(as.character(expr_norm$X28515))
+
+indx <- sapply(expr_norm, is.factor)
+expr_norm[indx] <- lapply(expr_norm[indx],function(x) as.numeric(as.character(x)))
+
+indx1 <- sapply(expression_min_all, is.factor)
+expression_min_all[indx1] <- lapply(expression_min_all[indx1],function(x) as.numeric(as.character(x)))
+
+boxplot(expression_min_all, main='Before Normalization')
+boxplot(expr_norm, main='After Normalization')
+
+```
+
+**3.3 Principal Component Analysis**
+
+  Principal Component Analysis (PCA) is a method used to reduce the dimension of large data sets and thereby a useful way to explore the naturally arising sample classes based on the expression profile. By including the top 50 microRNA that have the largest variation across all samples, an overview of how the samples cluster based on this variance is obtained. If the biological differences between the samples are pronounced, this will be a primary component of the variation. This leads to separation of samples in different regions of a PCA plot corresponding to their biology. If other factors, e.g., RNA quality, inflict more variation on the samples, the samples will not cluster according to the biology. The largest component in the variation is plotted along the X-axis and the second largest is plotted on the Y-axis. Samples cluster based on group information provided.
+
+```{r, echo=FALSE}
+expression_min_all$STD <- apply(expression_min_all,1,sd)
+expr_norm$STD <- apply(expr_norm,1,sd)
+expr_norm_sort <- expr_norm[order(-expr_norm$STD),]
+expr_norm_min <- expr_norm_sort[c(1:50),c(1:12)]
+
+#PCA
+pca <- expr_norm_min %>% t %>% scale %>% prcomp 
+
+data.frame(summary(pca)$importance)[,1:5]%>%pander
+groups <- c("RC-MV:12","RC-Cell:9", "GC-Cell:1","GC-MV:5","RC-MV:11","GC-Cell:2","GC-MV:4", "GC-Cell:3", "RC-Cell:8","RC-MV:10","RC-Cell:7","GC-MV:6")
+
+colorby <- "cells"
+pt <- ggplot(data = data.frame(pca$x, cells = groups, samples = groups, stringsAsFactors = F), 
+             aes(x=as.numeric(PC1), y = as.numeric(PC2), label = samples)) +
+  theme(plot.title = element_text(lineheight = 0.8, face="bold")) +
+  ggtitle(paste("PCA Plot")) +
+  geom_point(aes(color = eval(parse(text = colorby))), size = 3) +
+  geom_text_repel(colour = "black", size = 3) +
+  geom_hline(yintercept = 0, colour = "gray65") +
+  geom_vline(xintercept = 0, colour = "gray65") +
+  labs(color = colorby) +
+  scale_x_continuous(name = paste0("PC1, ", round(summary(pca)$importance[2,1] * 100, digits = 2), "% variability" )) +
+  scale_y_continuous(name = paste0("PC2, ", round(summary(pca)$importance[2,2] * 100, digits = 2), "% variability" ))
+plot(pt)
+
+```
+
+**3.3 Heat Map and Unsupervised Clustering**
+
+  The heat map diagram shows the result of the two-way hierarchical clustering of microRNAs and samples. Each row represents one microRNA, and each column represents one sample. The microRNA clustering tree is shown on the left. The color scale shown at the bottom illustrates the relative expression level of a microRNA across all samples: red color represents an expression level above mean, green color represents expression lower than the mean. As seen in the heat map, the samples separate very clearly by group and type of sample (MV or cell).
+  
+```{r, echo=FALSE}
+#Clustering
+hc1 <- hclust(as.dist(1-abs(cor(expr_norm_min))), method='average')
+plot(hc1, cex = 0.5, xlab="Sample")
+```
+
+Dendrogram of microRNAs
+
+```{r, echo=FALSE}
+hc2 <- hclust(as.dist((1 - cor(t(expr_norm_min))) / 2), method = "average")
+plot(hc2, cex = 0.5, xlab="microRNA")
+```
+
+Heat map and unsupervised hierarchical clustering. The clustering is performed on all
+samples, and on the top 50 microRNAs with highest standard deviation. The normalized (dCq) values
+have been used for the analysis.
+
+```{r, echo=FALSE}
+dend1 <- as.dendrogram(hc1)
+dend2 <- as.dendrogram(hc2)
+
+heatmap(as.matrix(expr_norm_min), col=greenred(75), Rowv = dend2, Colv = dend1, xlab = "Sample")
+
+```
+
+
+```{r, echo=FALSE}
+#Differential Expression
+#GC-MV
+groupGCMV <- data.frame(cbind(expr_norm$X28507,expr_norm$X28510, expr_norm$X28515))
+rownames(groupGCMV) <- rownames(expr_norm)
+colnames(groupGCMV) <- c("X28507","X28510","X28515")
+groupGCMV$Mean <- rowMeans(groupGCMV, na.rm=TRUE)
+groupGCMV$Variance <- apply(groupGCMV[1:3],1,var)
+
+#GC-Cell
+groupGCCell <- data.frame(cbind(expr_norm$X28506,expr_norm$X28509, expr_norm$X28511))
+rownames(groupGCCell) <- rownames(expr_norm)
+colnames(groupGCCell) <- c("X28506","X28509","X28511")
+groupGCCell$Mean <- rowMeans(groupGCCell, na.rm=TRUE)
+groupGCCell$Variance <- apply(groupGCCell[1:3],1,var)
+
+
+#RC-MV
+groupRCMV <- data.frame(cbind(expr_norm$X28504,expr_norm$X28508, expr_norm$X28513))
+rownames(groupRCMV) <- rownames(expr_norm)
+colnames(groupRCMV) <- c("X28504","X28508","X28513")
+groupRCMV$Mean <- rowMeans(groupRCMV, na.rm=TRUE)
+groupRCMV$Variance <- apply(groupRCMV[1:3],1,var)
+
+#RC-Cell
+groupRCCell <- data.frame(cbind(expr_norm$X28505,expr_norm$X28512, expr_norm$X28514))
+rownames(groupRCCell) <- rownames(expr_norm)
+colnames(groupRCCell) <- c("X28505","X28512","X28514")
+groupRCCell$Mean <- rowMeans(groupRCCell, na.rm=TRUE)
+groupRCCell$Variance <- apply(groupRCCell[1:3],1,var)
+
+GCMVvsGCC_t.value <- (groupGCMV$Mean-groupGCCell$Mean)/sqrt((groupGCMV$Variance/3)+(groupGCCell$Variance/3))
+GCMVvsGCC_Df <- (((groupGCMV$Variance/3)+(groupGCCell$Variance/3))**2)/((((groupGCMV$Variance/3)**2)/2)+((((groupGCCell$Variance)/3)**2)/2))
+GCMVvsGCC_p.value <- 2*pt(GCMVvsGCC_t.value, GCMVvsGCC_Df, lower=FALSE)
+GCMVvsGCC_fc <- 2**(groupGCMV$Mean-groupGCCell$Mean)
+GCMVvsGCC_log2fc <- log2(GCMVvsGCC_fc)
+
+RCMVvsRCC_t.value <- (groupRCMV$Mean-groupRCCell$Mean)/sqrt((groupRCMV$Variance/3)+(groupRCCell$Variance/3))
+RCMVvsRCC_Df <- (((groupRCMV$Variance/3)+(groupRCCell$Variance/3))**2)/((((groupRCMV$Variance/3)**2)/2)+((((groupRCCell$Variance)/3)**2)/2))
+RCMVvsRCC_p.value <- 2*pt(GCMVvsGCC_t.value, RCMVvsRCC_Df, lower=FALSE)
+RCMVvsRCC_fc <- 2**(groupRCMV$Mean-groupRCCell$Mean)
+RCMVvsRCC_log2fc <- log2(RCMVvsRCC_fc)
+
+GCMVvsRCMV_t.value <- (groupGCMV$Mean-groupRCMV$Mean)/sqrt((groupGCMV$Variance/3)+(groupRCMV$Variance/3))
+GCMVvsRCMV_Df <- (((groupGCMV$Variance/3)+(groupRCMV$Variance/3))**2)/((((groupGCMV$Variance/3)**2)/2)+((((groupRCMV$Variance)/3)**2)/2))
+GCMVvsRCMV_p.value <- 2*pt(GCMVvsGCC_t.value, GCMVvsRCMV_Df, lower=FALSE)
+GCMVvsRCMV_fc <- 2**(groupGCMV$Mean-groupRCMV$Mean)
+GCMVvsRCMV_log2fc <- log2(GCMVvsRCMV_fc)
+
+GCCvsRCC_t.value <- (groupGCCell$Mean-groupRCCell$Mean)/sqrt((groupGCCell$Variance/3)+(groupRCCell$Variance/3))
+GCCvsRCC_Df <- (((groupGCCell$Variance/3)+(groupRCCell$Variance/3))**2)/((((groupGCCell$Variance/3)**2)/2)+((((groupRCCell$Variance)/3)**2)/2))
+GCCvsRCC_p.value <- 2*pt(GCMVvsGCC_t.value, GCCvsRCC_Df, lower=FALSE)
+GCCvsRCC_fc <- 2**(groupGCCell$Mean-groupRCCell$Mean)
+GCCvsRCC_log2fc <- log2(GCCvsRCC_fc)
+
+Diff_expr_GCMVvsGCC <- data.frame(cbind(GCMVvsGCC_t.value,GCMVvsGCC_Df,GCMVvsGCC_p.value,GCMVvsGCC_fc,GCMVvsGCC_log2fc))
+rownames(Diff_expr_GCMVvsGCC) <- rownames(expr_norm)
+colnames(Diff_expr_GCMVvsGCC) <- c("t.value","Df","p.value","Fold Change","log2FoldChange")
+
+Diff_expr_RCMVvsRCC <- data.frame(cbind(RCMVvsRCC_t.value,RCMVvsRCC_Df,RCMVvsRCC_p.value,RCMVvsRCC_fc,RCMVvsRCC_log2fc))
+rownames(Diff_expr_RCMVvsRCC) <- rownames(expr_norm)
+colnames(Diff_expr_RCMVvsRCC) <- c("t.value","Df","p.value","Fold Change","log2FoldChange")
+
+Diff_expr_GCMVvsRCMV <- data.frame(cbind(GCMVvsRCMV_t.value,GCMVvsRCMV_Df,GCMVvsRCMV_p.value,GCMVvsRCMV_fc,GCMVvsRCMV_log2fc))
+rownames(Diff_expr_GCMVvsRCMV) <- rownames(expr_norm)
+colnames(Diff_expr_GCMVvsRCMV) <- c("t.value","Df","p.value","Fold Change","log2FoldChange")
+
+Diff_expr_GCCvsRCC <- data.frame(cbind(GCCvsRCC_t.value,GCCvsRCC_Df,GCCvsRCC_p.value,GCCvsRCC_fc,GCCvsRCC_log2fc))
+rownames(Diff_expr_GCCvsRCC) <- rownames(expr_norm)
+colnames(Diff_expr_GCCvsRCC) <- c("t.value","Df","p.value","Fold Change","log2FoldChange")
+
+Diff_expr <- data.frame(cbind(GCMVvsGCC_t.value,GCMVvsGCC_p.value,GCMVvsGCC_fc,GCMVvsGCC_log2fc,RCMVvsRCC_t.value,RCMVvsRCC_p.value,RCMVvsRCC_fc,RCMVvsRCC_log2fc,GCMVvsRCMV_t.value,GCMVvsRCMV_p.value,GCMVvsRCMV_fc,GCMVvsRCMV_log2fc,GCCvsRCC_t.value,GCCvsRCC_p.value,GCCvsRCC_fc,GCCvsRCC_log2fc))
+rownames(Diff_expr) <- rownames(expr_norm)
+colnames(Diff_expr) <- c("GCMVvsGCC_t.value","GCMVvsGCC_p.value","GCMVvsGCC_fc","GCMVvsGCC_log2fc","RCMVvsRCC_t.value","RCMVvsRCC_p.value","RCMVvsRCC_fc","RCMVvsRCC_log2fc","GCMVvsRCMV_t.value","GCMVvsRCMV_p.value","GCMVvsRCMV_fc","GCMVvsRCMV_log2fc","GCCvsRCC_t.value","GCCvsRCC_p.value","GCCvsRCC_fc","GCCvsRCC_log2fc")
+
+
+Diff_expr_GCMVvsGCC <- completeFun(Diff_expr_GCMVvsGCC, names(Diff_expr_GCMVvsGCC))
+Diff_expr_RCMVvsRCC <- completeFun(Diff_expr_RCMVvsRCC, names(Diff_expr_RCMVvsRCC))
+Diff_expr_GCMVvsRCMV <- completeFun(Diff_expr_GCMVvsRCMV, names(Diff_expr_GCMVvsRCMV))
+Diff_expr_GCCvsRCC <- completeFun(Diff_expr_GCCvsRCC, names(Diff_expr_GCCvsRCC))
+
+Diff_expr_GCMVvsGCC$padj <- p.adjust(Diff_expr_GCMVvsGCC$p.value,method="BH",n=length(Diff_expr_GCMVvsGCC$p.value))
+Diff_expr_RCMVvsRCC$padj <- p.adjust(Diff_expr_RCMVvsRCC$p.value,method="BH",n=length(Diff_expr_RCMVvsRCC$p.value))
+Diff_expr_GCMVvsRCMV$padj <- p.adjust(Diff_expr_GCMVvsRCMV$p.value,method="BH",n=length(Diff_expr_GCMVvsRCMV$p.value))
+Diff_expr_GCCvsRCC$padj <- p.adjust(Diff_expr_GCCvsRCC$p.value,method="BH",n=length(Diff_expr_GCCvsRCC$p.value))
+
+Diff_expr_GCMVvsGCC$gene <- rownames(Diff_expr_GCMVvsGCC)
+Diff_expr_RCMVvsRCC$gene <- rownames(Diff_expr_RCMVvsRCC)
+Diff_expr_GCMVvsRCMV$gene <- rownames(Diff_expr_GCMVvsRCMV)
+Diff_expr_GCCvsRCC$gene <- rownames(Diff_expr_GCCvsRCC)
+```
+
+
+**3.4 Differentially Expression microRNAs:GC-MV vs GC-Cell**
+When comparing the GC-MV group to the GC-cell group using a t-test, 13 microRNAs were found to be differentially expressed using a cutoff of p-value < 0.05. 11 of these pass a Benjamini-Hochberg correction at a significance level of 0.05. The expression data have been plotted in a Volcano plot to enable quick visual identification of those microRNAs that display large-magnitude changes that are also statistically significant. The volcano plot is constructed by plotting the p-value on the y-axis, and the fold change (ddCq) between the two experimental groups on the x-axis so that up- and down regulations appear equidistant from the center. Plotting points in this way results in two regions of interest in the plot: those points that are found towards the top of the plot that are far to either the left- or the right-hand side. These represent values that display large magnitude fold changes (hence being left- or right- of center) as well as high statistical significance (hence being towards the top).
+```{r, echo=FALSE}
+#Volcano Plots: GC-MV vs GC-Cell
+Diff_expr_GCMVvsGCC_sort <- Diff_expr_GCMVvsGCC[order(Diff_expr_GCMVvsGCC$p.value),]
+head(Diff_expr_GCMVvsGCC_sort, 20)
+with(Diff_expr_GCMVvsGCC, plot(Diff_expr_GCMVvsGCC$log2FoldChange, -log10(Diff_expr_GCMVvsGCC$p.value), pch=20, main="Volcano plot", xlim=c(-8,8), xlab="log2 fold change", ylab="-log10(p-value)"))+
+with(subset(Diff_expr_GCMVvsGCC, padj<.05 ), points(log2FoldChange, -log10(p.value), pch=20, col="red"))+
+with(subset(Diff_expr_GCMVvsGCC, padj<.05), textxy(log2FoldChange, -log10(p.value), labs=gene, cex=0.7))
+```
+
+**3.5 Differentially Expression microRNAs:RC-MV vs RC-Cell**
+When comparing the RC-MV group to the RC-cell group using a t-test, 31 microRNAs were found to be differentially expressed using a cutoff of p-value < 0.05. 3 of these pass a Benjamini-Hochberg correction at a significance level of 0.05. The expression data have been plotted in a Volcano plot to enable quick visual identification of those microRNAs that display large-magnitude changes that are also statistically significant. The volcano plot is constructed by plotting the p-value on the y-axis, and the fold change (ddCq) between the two experimental groups on the x-axis so that up- and down regulations appear equidistant from the center. Plotting points in this way results in two regions of interest in the plot: those points that are found towards the top of the plot that are far to either the left- or the right-hand side. These represent values that display large magnitude fold changes (hence being left- or right- of center) as well as high statistical significance (hence being towards the top).
+
+```{r, echo=FALSE}
+#Volcano Plots: RC-MV vs RC-Cell
+Diff_expr_RCMVvsRCC_sort <- Diff_expr_RCMVvsRCC[order(Diff_expr_RCMVvsRCC$p.value),]
+head(Diff_expr_RCMVvsRCC_sort, 20)
+with(Diff_expr_RCMVvsRCC, plot(Diff_expr_RCMVvsRCC$log2FoldChange, -log10(Diff_expr_RCMVvsRCC$p.value), pch=20, main="Volcano plot", xlim=c(-8,8), xlab="log2 fold change", ylab="-log10(p-value)"))+
+with(subset(Diff_expr_RCMVvsRCC, padj<.05 ), points(log2FoldChange, -log10(p.value), pch=20, col="red"))+
+with(subset(Diff_expr_RCMVvsRCC, padj<.05), textxy(log2FoldChange, -log10(p.value), labs=gene, cex=0.7))
+```
+
+**3.6 Differentially Expression microRNAs:GC-MV vs RC-MV**
+When comparing the GC-MV group to the RC-MV group using a t-test, 33 microRNAs were found to be differentially expressed using a cutoff of p-value < 0.05. 6 of these pass a Benjamini-Hochberg correction at a significance level of 0.05. The expression data have been plotted in a Volcano plot to enable quick visual identification of those microRNAs that display large-magnitude changes that are also statistically significant. The volcano plot is constructed by plotting the p-value on the y-axis, and the fold change (ddCq) between the two experimental groups on the x-axis so that up- and down regulations appear equidistant from the center. Plotting points in this way results in two regions of interest in the plot: those points that are found towards the top of the plot that are far to either the left- or the right-hand side. These represent values that display large magnitude fold changes (hence being left- or right- of center) as well as high statistical significance (hence being towards the top).
+
+```{r, echo=FALSE}
+#Volcano Plots: GC-MV vs RC-MV
+Diff_expr_GCMVvsRCMV_sort <- Diff_expr_GCMVvsRCMV[order(Diff_expr_GCMVvsRCMV$p.value),]
+head(Diff_expr_GCMVvsRCMV_sort, 20)
+with(Diff_expr_GCMVvsRCMV, plot(Diff_expr_GCMVvsRCMV$log2FoldChange, -log10(Diff_expr_GCMVvsRCMV$p.value), pch=20, main="Volcano plot", xlim=c(-8,8), xlab="log2 fold change", ylab="-log10(p-value)"))+
+with(subset(Diff_expr_GCMVvsRCMV, padj<.05 ), points(log2FoldChange, -log10(p.value), pch=20, col="red"))+
+with(subset(Diff_expr_GCMVvsRCMV, padj<.05), textxy(log2FoldChange, -log10(p.value), labs=gene, cex=0.7))
+```
+
+**3.7 Differentially Expression microRNAs:GC-Cell vs RC-Cell**
+  When comparing the GC-cell group to the RC-cell group using a t-test, 31 microRNAs were found to be differentially expressed using a cutoff of p-value < 0.05. 9 of these pass a Benjamini-Hochberg correction at a significance level of 0.05 which we recommend to do when doing panel or array profiling. The expression data have been plotted in a Volcano plot to enable quick visual identification of those microRNAs that display large-magnitude changes that are also statistically significant. The volcano plot is constructed by plotting the p-value on the y-axis, and the fold change (ddCq) between the two experimental groups on the x-axis so that up- and down regulations appear equidistant from the center. Plotting points in this way results in two regions of interest in the plot: those points that are found towards the top of the plot that are far to either the left- or the right-hand side. These represent values that display large magnitude fold changes (hence being left- or right- of center) as well as high statistical significance (hence being towards the top).
+
+```{r, echo=FALSE}
+#Volcano Plots: GC-Cell vs RC-Cell
+Diff_expr_GCCvsRCC_sort <- Diff_expr_GCCvsRCC[order(Diff_expr_GCCvsRCC$p.value),]
+head(Diff_expr_GCCvsRCC_sort, 20)
+with(Diff_expr_GCCvsRCC, plot(Diff_expr_GCCvsRCC$log2FoldChange, -log10(Diff_expr_GCCvsRCC$p.value), pch=20, main="Volcano plot", xlim=c(-8,8), xlab="log2 fold change", ylab="-log10(p-value)"))+
+with(subset(Diff_expr_GCCvsRCC, padj<.05 ), points(log2FoldChange, -log10(p.value), pch=20, col="red"))+
+with(subset(Diff_expr_GCCvsRCC, padj<.05), textxy(log2FoldChange, -log10(p.value), labs=gene, cex=0.7))
+```
+
+## **4.Discussion/Conclusions**
+
+  The profiling of your samples was successfully completed. Controls (NTC and RNA spike-in) indicated good technical performance of the profiling experiment. The number of overlapping microRNAs between the MV and cell samples is very high (146), so the global mean normalization approach has been used. The two sample types do not appear to have pronounced overall differences in call-rate or average Cq. The unsupervised analysis shows that the samples cluster clearly by their biological group. Further to this, the supervised comparison between the four groups identify a high number of microRNAs as differentially expressed.
+  
+  At this time, little is known about the function of MV miRNAs in bone formation. Extracellular miRNAs have been shown to play an important role in cell–cell communication in physiological and pathological processes [9]. It is reasonable to assume that MV miRNAs can also be transferred to other cells in the local environment in an autocrine or paracrine manner, and thereby, regulate their gene expression and biological behavior. In our study, geneontology analysis of the predicted targets of miRNAs enriched in MVs identified several signaling pathways including PI3K-AKT,
+focal adhesion, HIF-1, TGFβ, insulin and WNT signaling, which have all been shown to play important roles chondrogenesis and bone formation [10]. It has been shown that PI3K-Akt-mTOR axis is central to insulin and insulin like growth factor (IGF) signaling, which are major anabolic factors for musculoskeletal cells including chondrocytes and osteoblasts. The strong association between MV miRNAs and PI3K-Akt-mTOR/IGF/WNT signaling molecules suggests that MVs may act as timed release agents to affect neighbor cell metabolism in the musculoskeletal system.
+
+  In conclusion, we demonstrated that RNA is present in MVs, and we further characterized the miRNA profile of this RNA. Compared to parent cells, MVs possessed a different miRNA expression pattern, and specific miRNAs were highly enriched. Our study suggests a potential role of MVs as “matrisomes” in cell–cell communication during bone formation and healing through the transfer of miRNAs. It may be possible to engineer MVs to contain specific miRNA to be delivered to cells in the mineralization environment to facilitate bone formation.
+
+## **References**
+
+[1] H.C. Anderson, Vesicles associated with calcification in thematrix of epiphyseal cartilage, J. Cell Biol. 41 (1) (1969) 59–72.
+
+[2] E. Bonucci, Fine structure of early cartilage calcification, J. Ultrastruct. Res. 20 (1) (1967) 33–50.
+
+[3] S.Y. Ali, H.C. Anderson, S.W. Sajdera, Enzymic and electron-microscopic analysis of extracellular matrix vesicles associated with calcification in cartilage, Biochem. J. 122 (5) (1971) 56P.
+
+[4] S.Y. Ali, S.W. Sajdera, H.C. Anderson, Isolation and characterization of calcifying matrix vesicles from epiphyseal cartilage, Proc. Natl. Acad. Sci. U. S. A. 67 (3) (1970) 1513–1520.
+
+[5] R.J. Majeska, R.E.Wuthier, Studies on matrix vesicles isolated from chick epiphyseal cartilage. Association of pyrophosphatase and ATPase activities with alkaline phosphatase, Biochim. Biophys. Acta 391 (1) (1975) 51–60.
+
+[6] R.E. Wuthier, G.F. Lipscomb, Matrix vesicles: structure, composition, formation and function in calcification, Front. Biosci. 16 (2011) 2812–2902.
+
+[7] J. Liao, R. Liu, L. Yin, Y. Pu, Expression profiling of exosomal miRNAs derived from human esophageal cancer cells by Solexa high-throughput sequencing, Int. J. Mol. Sci. 15 (9) (2014) 15530–15551.
+
+[8] I.S. Vlachos, M.D. Paraskevopoulou, D. Karagkouni, et al., DIANA-TarBase v7.0: indexing more than half a million experimentally supported miRNA:mRNA interactions, Nucleic Acids Res. 43 (Database issue) (2015) D153–D159.
+
+[9] L. Cheng, R.A. Sharples, B.J. Scicluna, A.F. Hill, Exosomes provide a protective and enriched source of miRNA for biomarker profiling compared to intracellular and cell-free blood, J. Extracell Vesicles. 3 (2014).
+
+[10] L.N.Wu, G.R. Sauer, B.R. Genge, R.E.Wuthier, Induction ofmineral deposition by primary cultures of chicken growth plate chondrocytes in ascorbate-containing media. Evidence of an association between matrix vesicles and collagen, J. Biol. Chem. 264 (35) (1989) 21346–21355.
